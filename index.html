@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon</title>
+    <meta name="description" content="Exciting things are coming soon">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="coming-soon-container">
+        <div class="coming-soon-text" id="comingSoonText">
+            <span class="char">C</span>
+            <span class="char">O</span>
+            <span class="char">M</span>
+            <span class="char">I</span>
+            <span class="char">N</span>
+            <span class="char">G</span>
+            <span class="char space"></span>
+            <span class="char">S</span>
+            <span class="char">O</span>
+            <span class="char">O</span>
+            <span class="char">N</span>
+        </div>
+        <div class="orbiting-ring" id="orbitingRing"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const comingSoonText = document.getElementById('comingSoonText');
+            const orbitingRing = document.getElementById('orbitingRing');
+            const chars = document.querySelectorAll('.char:not(.space)');
+        
+            // Text glow effect based on cursor position
+            document.addEventListener('mousemove', (e) => {
+                const x = e.clientX;
+                const y = e.clientY;
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+                const maxDistance = Math.sqrt(centerX ** 2 + centerY ** 2);
+                const glowIntensity = 1 - (distance / maxDistance);
+                comingSoonText.style.textShadow = `0 0 ${10 + glowIntensity * 30}px rgba(255, 255, 255, ${glowIntensity * 0.8})`;
+                comingSoonText.style.color = `rgba(255, 255, 255, ${glowIntensity})`;
+            });
+        
+            let currentChar = 0;
+            let direction = 1; 
+            let progress = 0;
+            const charDelay = 200; 
+            let lastTime = null;
+        
+            function animateRing(timestamp) {
+                if (!lastTime) lastTime = timestamp;
+                const delta = timestamp - lastTime;
+        
+                if (delta > charDelay / 10) {
+                    progress += delta / charDelay;
+        
+                    if (progress >= 1) {
+                        progress = 0;
+                        currentChar += direction;
+        
+                        if (currentChar >= chars.length - 1 || currentChar <= 0) {
+                            direction *= -1; 
+                        }
+                    }
+        
+                    const fromChar = chars[currentChar];
+                    const toChar = chars[currentChar + direction] || fromChar;
+        
+                    const fromRect = fromChar.getBoundingClientRect();
+                    const toRect = toChar.getBoundingClientRect();
+        
+                    const x = fromRect.left + (toRect.left - fromRect.left) * progress;
+                    const y = fromRect.top + (toRect.top - fromRect.top) * progress;
+        
+                    orbitingRing.style.left = `${x - 15}px`;
+                    orbitingRing.style.top = `${y - 15}px`;
+        
+                    const scale = 0.8 + Math.sin(progress * Math.PI) * 0.4;
+                    orbitingRing.style.transform = `scale(${scale})`;
+        
+                    lastTime = timestamp;
+                }
+        
+                requestAnimationFrame(animateRing);
+            }
+        
+            requestAnimationFrame(animateRing);
+        });
+        </script>
+        
+</body>
+</html>
